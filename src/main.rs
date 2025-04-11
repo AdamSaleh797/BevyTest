@@ -3,6 +3,7 @@
 use bevy::prelude::*;
 
 fn main() {
+    println!("Git Test");
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
