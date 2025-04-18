@@ -1,14 +1,21 @@
 use bevy::{
-    app::{Plugin, Startup},
+    app::{FixedUpdate, Plugin, Startup},
     asset::Assets,
     color::Color,
     core_pipeline::core_2d::Camera2d,
-    ecs::system::{Commands, ResMut},
+    ecs::{
+        component::Component,
+        query::With,
+        system::{Commands, Query, ResMut},
+    },
     math::primitives::Circle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
     transform::components::Transform,
 };
+
+#[derive(Component)]
+struct CircleId;
 
 fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
@@ -26,12 +33,19 @@ fn setup(
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
-    commands.spawn((transform, mesh_component, color_component));
+    commands.spawn((CircleId, transform, mesh_component, color_component));
+}
+
+fn move_entities(mut query: Query<&mut Transform, With<CircleId>>) {
+    for mut shape in &mut query {
+        shape.translation.x += 1.;
+    }
 }
 
 pub struct CirclePlugin;
 impl Plugin for CirclePlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Startup, setup);
+        app.add_systems(Startup, setup)
+            .add_systems(FixedUpdate, move_entities);
     }
 }
