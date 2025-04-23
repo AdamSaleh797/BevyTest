@@ -1,18 +1,19 @@
 use bevy::{
-    app::{FixedUpdate, Plugin, Startup},
+    app::{Plugin, Startup},
     asset::Assets,
     color::Color,
     core_pipeline::core_2d::Camera2d,
     ecs::{
         component::Component,
-        query::With,
-        system::{Commands, Query, ResMut},
+        system::{Commands, ResMut},
     },
     math::primitives::Circle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
     transform::components::Transform,
 };
+
+use crate::mouse_drag::Draggable;
 
 #[derive(Component)]
 struct CircleId;
@@ -33,19 +34,18 @@ fn setup(
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
-    commands.spawn((CircleId, transform, mesh_component, color_component));
-}
-
-fn move_entities(mut query: Query<&mut Transform, With<CircleId>>) {
-    for mut shape in &mut query {
-        shape.translation.x += 1.;
-    }
+    commands.spawn((
+        CircleId,
+        Draggable,
+        transform,
+        mesh_component,
+        color_component,
+    ));
 }
 
 pub struct CirclePlugin;
 impl Plugin for CirclePlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Startup, setup)
-            .add_systems(FixedUpdate, move_entities);
+        app.add_systems(Startup, setup);
     }
 }

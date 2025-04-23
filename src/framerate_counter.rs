@@ -20,7 +20,7 @@ impl Framerate {
 }
 
 fn print_framerate(mut framerate: ResMut<Framerate>, time: Res<Time>) {
-    framerate.frames = framerate.frames + 1;
+    framerate.frames += 1;
     if framerate.timer.tick(time.delta()).just_finished() {
         println!("{} fps", framerate.frames);
         framerate.frames = 0;
