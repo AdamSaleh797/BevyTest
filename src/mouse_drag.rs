@@ -2,6 +2,7 @@ use bevy::{
     app::{Plugin, Update},
     ecs::{
         component::Component,
+        entity::Entity,
         query::With,
         system::{Query, Res, ResMut, Resource, Single},
     },
@@ -15,13 +16,16 @@ use bevy::{
 fn mouse_inputs(
     input: Res<ButtonInput<MouseButton>>,
     mut dragging: ResMut<DraggingState>,
-    draggable: Single<&Transform, With<Draggable>>,
+    draggable_query: Query<(&Transform, Entity), With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
 ) {
     if let Some(cursor_position) = cursor_position(&window) {
-        let offset = draggable.translation.xy() - cursor_position;
-        if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
-            *dragging = DraggingState::Dragging { offset };
+        for (draggable, id) in &draggable_query {
+            let offset = draggable.translation.xy() - cursor_position;
+            if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
+                *dragging = DraggingState::Dragging { offset, id };
+                break;
+            }
         }
     }
     if input.just_released(MouseButton::Left) {
@@ -38,14 +42,15 @@ fn drag(
     //     DraggingState::Idle => return,
     //     DraggingState::Dragging { offset } => offset
     // };
-    let DraggingState::Dragging { offset } = *dragging else {
+    let DraggingState::Dragging { offset, id } = *dragging else {
         return;
     };
-    for mut transform in &mut query {
-        if let Some(cursor_position) = cursor_position(&window) {
-            transform.translation.x = cursor_position.x + offset.x;
-            transform.translation.y = cursor_position.y + offset.y;
-        }
+    let Ok(mut transform) = query.get_mut(id) else {
+        return;
+    };
+    if let Some(cursor_position) = cursor_position(&window) {
+        transform.translation.x = cursor_position.x + offset.x;
+        transform.translation.y = cursor_position.y + offset.y;
     }
 }
 
@@ -61,7 +66,7 @@ pub struct Draggable;
 
 #[derive(Resource)]
 enum DraggingState {
-    Dragging { offset: Vec2 },
+    Dragging { offset: Vec2, id: Entity },
     Idle,
 }
 impl DraggingState {

@@ -38,6 +38,14 @@ fn setup(
         CircleId,
         Draggable,
         transform,
+        mesh_component.clone(),
+        color_component.clone(),
+    ));
+
+    commands.spawn((
+        CircleId,
+        Draggable,
+        transform,
         mesh_component,
         color_component,
     ));
