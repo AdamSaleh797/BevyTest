@@ -14,34 +14,37 @@ use bevy::{
 //mouse inputs shouldnt have draggable/window params fix later
 fn mouse_inputs(
     input: Res<ButtonInput<MouseButton>>,
-    mut dragging: ResMut<Dragging>,
+    mut dragging: ResMut<DraggingState>,
     draggable: Single<&Transform, With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
 ) {
     if let Some(cursor_position) = cursor_position(&window) {
-        if (draggable.translation.xy() - cursor_position).length() <= 50.
-            && input.just_pressed(MouseButton::Left)
-        {
-            dragging.dragging = true;
+        let offset = draggable.translation.xy() - cursor_position;
+        if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
+            *dragging = DraggingState::Dragging { offset };
         }
     }
     if input.just_released(MouseButton::Left) {
-        dragging.dragging = false;
+        *dragging = DraggingState::Idle;
     }
 }
 
 fn drag(
     mut query: Query<&mut Transform, With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
-    dragging: Res<Dragging>,
+    dragging: Res<DraggingState>,
 ) {
-    if !dragging.dragging {
+    // let offset = match *dragging {
+    //     DraggingState::Idle => return,
+    //     DraggingState::Dragging { offset } => offset
+    // };
+    let DraggingState::Dragging { offset } = *dragging else {
         return;
-    }
+    };
     for mut transform in &mut query {
         if let Some(cursor_position) = cursor_position(&window) {
-            transform.translation.x = cursor_position.x;
-            transform.translation.y = cursor_position.y;
+            transform.translation.x = cursor_position.x + offset.x;
+            transform.translation.y = cursor_position.y + offset.y;
         }
     }
 }
@@ -57,19 +60,23 @@ fn cursor_position(window: &Window) -> Option<Vec2> {
 pub struct Draggable;
 
 #[derive(Resource)]
-struct Dragging {
-    dragging: bool,
+enum DraggingState {
+    Dragging { offset: Vec2 },
+    Idle,
 }
-impl Dragging {
+impl DraggingState {
     fn new() -> Self {
-        Self { dragging: false }
+        Self::Idle
+    }
+    fn is_idle(&self) -> bool {
+        matches!(self, Self::Idle)
     }
 }
 
 pub struct MouseDragPlugin;
 impl Plugin for MouseDragPlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.insert_resource(Dragging::new())
+        app.insert_resource(DraggingState::new())
             .add_systems(Update, mouse_inputs)
             .add_systems(Update, drag);
     }
