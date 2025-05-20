@@ -4,7 +4,7 @@ use bevy::{
         component::Component,
         entity::Entity,
         query::With,
-        system::{Query, Res, ResMut, Resource, Single},
+        system::{Commands, Query, Res, ResMut, Resource, Single},
     },
     input::{ButtonInput, mouse::MouseButton},
     math::{Vec2, Vec3Swizzles},
@@ -12,29 +12,38 @@ use bevy::{
     window::{PrimaryWindow, Window},
 };
 
+use crate::inertia::Inertia;
+
 //mouse inputs shouldnt have draggable/window params fix later
 fn mouse_inputs(
+    mut commands: Commands,
     input: Res<ButtonInput<MouseButton>>,
     mut dragging: ResMut<DraggingState>,
     draggable_query: Query<(&Transform, Entity), With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
 ) {
     if let Some(cursor_position) = cursor_position(&window) {
-        for (draggable, id) in &draggable_query {
-            let offset = draggable.translation.xy() - cursor_position;
+        for (transform, id) in &draggable_query {
+            let offset = transform.translation.xy() - cursor_position;
             if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
                 *dragging = DraggingState::Dragging { offset, id };
+                commands.entity(id).insert(Inertia {
+                    target_position: transform.translation.xy(),
+                });
                 break;
             }
         }
     }
     if input.just_released(MouseButton::Left) {
-        *dragging = DraggingState::Idle;
+        if let DraggingState::Dragging { id, .. } = *dragging {
+            commands.entity(id).remove::<Inertia>();
+            *dragging = DraggingState::Idle;
+        }
     }
 }
 
 fn drag(
-    mut query: Query<&mut Transform, With<Draggable>>,
+    mut query: Query<&mut Inertia, With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
     dragging: Res<DraggingState>,
 ) {
@@ -45,12 +54,12 @@ fn drag(
     let DraggingState::Dragging { offset, id } = *dragging else {
         return;
     };
-    let Ok(mut transform) = query.get_mut(id) else {
+    let Ok(mut inertia) = query.get_mut(id) else {
         return;
     };
     if let Some(cursor_position) = cursor_position(&window) {
-        transform.translation.x = cursor_position.x + offset.x;
-        transform.translation.y = cursor_position.y + offset.y;
+        inertia.target_position.x = cursor_position.x + offset.x;
+        inertia.target_position.y = cursor_position.y + offset.y;
     }
 }
 
