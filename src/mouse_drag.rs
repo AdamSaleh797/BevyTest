@@ -27,9 +27,9 @@ fn mouse_inputs(
             let offset = transform.translation.xy() - cursor_position;
             if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
                 *dragging = DraggingState::Dragging { offset, id };
-                commands.entity(id).insert(Inertia {
-                    target_position: transform.translation.xy(),
-                });
+                commands
+                    .entity(id)
+                    .insert(Inertia::new(transform.translation.xy()));
                 break;
             }
         }
