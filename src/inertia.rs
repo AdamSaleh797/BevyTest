@@ -12,8 +12,8 @@ pub struct Inertia {
 
 fn apply_inertia(mut inertia_query: Query<(&Inertia, &mut Transform)>) {
     for (inertia, mut transform) in &mut inertia_query {
-        transform.translation.x = inertia.target_position.x;
-        transform.translation.y = inertia.target_position.y;
+        transform.translation.x = 0.2 * transform.translation.x + 0.8 * inertia.target_position.x;
+        transform.translation.y = 0.2 * transform.translation.y + 0.8 * inertia.target_position.y;
     }
 }
 
