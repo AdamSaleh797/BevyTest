@@ -1,5 +1,21 @@
 use bevy::color::Color;
+use strum::{EnumIter, EnumTable};
 
+#[derive(EnumTable, EnumIter, Clone, Copy)]
+pub enum PrimaryColor {
+    Red,
+    Yellow,
+    Blue,
+}
+impl PrimaryColor {
+    pub fn to_bevy_color(&self) -> Color {
+        match self {
+            PrimaryColor::Red => Color::srgb_u8(244, 56, 1),
+            PrimaryColor::Yellow => Color::srgb_u8(240, 196, 1),
+            PrimaryColor::Blue => Color::srgb_u8(44, 104, 187),
+        }
+    }
+}
 pub enum Palette {
     Red,
     Yellow,

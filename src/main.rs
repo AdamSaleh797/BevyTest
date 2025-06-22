@@ -1,11 +1,14 @@
+mod bank;
 mod circle;
 mod framerate_counter;
 mod inertia;
 mod mouse_drag;
-mod pool;
 mod palette;
+mod pool;
 
-use bevy::{DefaultPlugins, app::App};
+use bank::BankPlugin;
+use bevy::{DefaultPlugins, app::App, prelude::PluginGroup};
+use bevy_world_space::{WorldSpacePlugins, world_init::WorldInitPlugin};
 use circle::CirclePlugin;
 use framerate_counter::FrameratePlugin;
 use inertia::InertiaPlugin;
@@ -16,10 +19,15 @@ fn main() {
     println!("Git Test");
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(WorldSpacePlugins.set(WorldInitPlugin {
+            screen_width: 1280.,
+            screen_height: 720.,
+        }))
         .add_plugins(FrameratePlugin)
         .add_plugins(CirclePlugin)
         .add_plugins(MouseDragPlugin)
         .add_plugins(InertiaPlugin)
         .add_plugins(PoolPlugin)
+        .add_plugins(BankPlugin)
         .run();
 }

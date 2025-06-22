@@ -1,7 +1,6 @@
 use bevy::{
-    app::{FixedUpdate, Plugin, Startup},
+    app::{Plugin, Startup, Update},
     asset::Assets,
-    color::Color,
     ecs::{
         component::Component,
         system::{Commands, ResMut, Single},
@@ -12,13 +11,7 @@ use bevy::{
     transform::components::Transform,
 };
 
-use crate::palette::Palette;
-
-enum PrimaryColor {
-    Red,
-    Yellow,
-    Blue,
-}
+use crate::palette::{Palette, PrimaryColor};
 
 #[derive(Component)]
 struct Pool {
@@ -46,7 +39,7 @@ impl Pool {
     }
 }
 
-pub fn setup(
+fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut commands: Commands,
@@ -68,13 +61,11 @@ pub fn setup(
     commands.spawn((pool, transform, mesh_component, color_component));
 }
 
-fn change_color(
-    pool_query: Single<(&mut Pool, &mut MeshMaterial2d<ColorMaterial>)>,
+fn update_color(
+    pool_query: Single<(&Pool, &mut MeshMaterial2d<ColorMaterial>)>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let (mut pool, mut color) = pool_query.into_inner();
-
-    pool.colors = (PrimaryColor::Blue, PrimaryColor::Yellow);
+    let (pool, mut color) = pool_query.into_inner();
 
     let new_color = pool.color().to_bevy_color();
     let material = materials.add(new_color);
@@ -84,6 +75,6 @@ pub struct PoolPlugin;
 impl Plugin for PoolPlugin {
     fn build(&self, app: &mut bevy::app::App) {
         app.add_systems(Startup, setup)
-            .add_systems(FixedUpdate, change_color);
+            .add_systems(Update, update_color);
     }
 }

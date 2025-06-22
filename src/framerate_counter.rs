@@ -1,5 +1,8 @@
 use bevy::{
-    app::{FixedUpdate, Plugin, Update}, ecs::system::{Res, ResMut, Resource}, log::info, time::{Time, Timer, TimerMode}
+    app::{FixedUpdate, Plugin},
+    ecs::system::{Res, ResMut, Resource},
+    log::info,
+    time::{Time, Timer, TimerMode},
 };
 use std::time::Duration;
 
