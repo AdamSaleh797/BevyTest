@@ -7,10 +7,14 @@ use bevy::{
         system::{Commands, Query, Res, ResMut, Resource, Single},
     },
     input::{ButtonInput, mouse::MouseButton},
-    math::{Vec2},
+    math::Vec2,
     window::{PrimaryWindow, Window},
 };
-use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::{AspectRatio, WorldUnit, WorldVec2}};
+use bevy_world_space::{
+    position::Position,
+    win_info::WinInfo,
+    world_unit::{AspectRatio, WorldUnit, WorldVec2},
+};
 
 use crate::inertia::{Inertia, InertiaParams};
 
@@ -24,15 +28,14 @@ fn mouse_inputs(
     win_info: Res<WinInfo>,
     aspect_ratio: Res<AspectRatio>,
 ) {
-    if let Some(cursor_position) = cursor_position(&window) {
+    if let Some(cursor_position) = cursor_position(&window, &win_info, &aspect_ratio) {
         for (position, id) in &draggable_query {
-            let offset = position.pos - WorldVec2::from_window_screen_pos(cursor_position, &win_info, &aspect_ratio); 
-            if offset.length() <= WorldUnit::ONE * (50.) && input.just_pressed(MouseButton::Left) {
+            let offset = position.pos - cursor_position;
+            if offset.length() <= WorldUnit::ONE && input.just_pressed(MouseButton::Left) {
                 *dragging = DraggingState::Dragging { offset, id };
-                commands.entity(id).insert(Inertia::new(
-                    position.pos,
-                    InertiaParams::plunging(),
-                ));
+                commands
+                    .entity(id)
+                    .insert(Inertia::new(position.pos, InertiaParams::plunging()));
                 break;
             }
         }
@@ -62,17 +65,19 @@ fn drag(
     let Ok(mut inertia) = query.get_mut(id) else {
         return;
     };
-    if let Some(cursor_position) = cursor_position(&window) {
-        let cursor_position = WorldVec2::from_window_screen_pos(cursor_position, &win_info, &aspect_ratio);
+    if let Some(cursor_position) = cursor_position(&window, &win_info, &aspect_ratio) {
         inertia.target_position.x = cursor_position.x + offset.x;
         inertia.target_position.y = cursor_position.y + offset.y;
     }
 }
 
-fn cursor_position(window: &Window) -> Option<Vec2> {
-    window.cursor_position().map(|cursor_position| Vec2 {
-        x: (cursor_position.x - (window.width() / 2.)),
-        y: ((window.height() / 2.) - cursor_position.y),
+fn cursor_position(
+    window: &Window,
+    win_info: &WinInfo,
+    aspect_ratio: &AspectRatio,
+) -> Option<WorldVec2> {
+    window.cursor_position().map(|cursor_position| {
+        WorldVec2::from_window_screen_pos(cursor_position, win_info, aspect_ratio)
     })
 }
 

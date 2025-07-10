@@ -26,8 +26,6 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut commands: Commands,
 ) {
-    commands.spawn(Camera2d);
-
     let circle = Circle::new(50.);
     let mesh = meshes.add(circle);
     let color = Color::srgb(1., 0., 0.);
