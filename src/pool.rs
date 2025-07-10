@@ -8,7 +8,10 @@ use bevy::{
     math::primitives::Ellipse,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
-    transform::components::Transform,
+};
+use bevy_world_space::{
+    position::Position,
+    world_unit::{WorldUnit, WorldVec2},
 };
 
 use crate::palette::{Palette, PrimaryColor};
@@ -54,11 +57,16 @@ fn setup(
     let color = pool.color().to_bevy_color();
     let material = materials.add(color);
 
-    let transform = Transform::from_xyz(0., 150., 0.);
+    let position = Position::new(
+        WorldVec2::new(WorldUnit::ZERO, WorldUnit::ONE * 5.),
+        WorldUnit::ONE,
+        200,
+        0.,
+    );
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
-    commands.spawn((pool, transform, mesh_component, color_component));
+    commands.spawn((pool, position, mesh_component, color_component));
 }
 
 fn update_color(

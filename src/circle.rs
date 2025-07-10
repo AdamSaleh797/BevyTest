@@ -5,12 +5,15 @@ use bevy::{
     core_pipeline::core_2d::Camera2d,
     ecs::{
         component::Component,
-        system::{Commands, ResMut},
+        system::{Commands, Res, ResMut},
     },
     math::primitives::Circle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
-    transform::components::Transform,
+};
+use bevy_world_space::{
+    position::Position,
+    world_unit::{AspectRatio, WorldUnit, WorldVec2},
 };
 
 use crate::mouse_drag::Draggable;
@@ -30,14 +33,14 @@ fn setup(
     let color = Color::srgb(1., 0., 0.);
     let material = materials.add(color);
 
-    let transform = Transform::from_xyz(0., 0., 0.);
+    let position = Position::new(WorldVec2::ZERO, WorldUnit::ONE, 100, 0.);
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
     commands.spawn((
         CircleId,
         Draggable,
-        transform,
+        position.clone(),
         mesh_component.clone(),
         color_component.clone(),
     ));
@@ -45,7 +48,7 @@ fn setup(
     commands.spawn((
         CircleId,
         Draggable,
-        transform,
+        position,
         mesh_component,
         color_component,
     ));

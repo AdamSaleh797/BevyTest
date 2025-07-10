@@ -64,7 +64,7 @@ fn setup(
                 ),
                 WorldUnit::ONE,
                 30,
-                100.,
+                0.,
             );
             let (mesh_component, color_component) = bank_icon(color, &mut meshes, &mut materials);
             commands.spawn((position, mesh_component, color_component));

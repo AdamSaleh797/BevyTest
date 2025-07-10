@@ -7,10 +7,10 @@ use bevy::{
         system::{Commands, Query, Res, ResMut, Resource, Single},
     },
     input::{ButtonInput, mouse::MouseButton},
-    math::{Vec2, Vec3Swizzles},
-    transform::components::Transform,
+    math::{Vec2},
     window::{PrimaryWindow, Window},
 };
+use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::{AspectRatio, WorldUnit, WorldVec2}};
 
 use crate::inertia::{Inertia, InertiaParams};
 
@@ -19,16 +19,18 @@ fn mouse_inputs(
     mut commands: Commands,
     input: Res<ButtonInput<MouseButton>>,
     mut dragging: ResMut<DraggingState>,
-    draggable_query: Query<(&Transform, Entity), With<Draggable>>,
+    draggable_query: Query<(&Position, Entity), With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
+    win_info: Res<WinInfo>,
+    aspect_ratio: Res<AspectRatio>,
 ) {
     if let Some(cursor_position) = cursor_position(&window) {
-        for (transform, id) in &draggable_query {
-            let offset = transform.translation.xy() - cursor_position;
-            if offset.length() <= 50. && input.just_pressed(MouseButton::Left) {
+        for (position, id) in &draggable_query {
+            let offset = position.pos - WorldVec2::from_window_screen_pos(cursor_position, &win_info, &aspect_ratio); 
+            if offset.length() <= WorldUnit::ONE * (50.) && input.just_pressed(MouseButton::Left) {
                 *dragging = DraggingState::Dragging { offset, id };
                 commands.entity(id).insert(Inertia::new(
-                    transform.translation.xy(),
+                    position.pos,
                     InertiaParams::plunging(),
                 ));
                 break;
@@ -47,6 +49,8 @@ fn drag(
     mut query: Query<&mut Inertia, With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
     dragging: Res<DraggingState>,
+    win_info: Res<WinInfo>,
+    aspect_ratio: Res<AspectRatio>,
 ) {
     // let offset = match *dragging {
     //     DraggingState::Idle => return,
@@ -59,6 +63,7 @@ fn drag(
         return;
     };
     if let Some(cursor_position) = cursor_position(&window) {
+        let cursor_position = WorldVec2::from_window_screen_pos(cursor_position, &win_info, &aspect_ratio);
         inertia.target_position.x = cursor_position.x + offset.x;
         inertia.target_position.y = cursor_position.y + offset.y;
     }
@@ -76,7 +81,7 @@ pub struct Draggable;
 
 #[derive(Resource)]
 enum DraggingState {
-    Dragging { offset: Vec2, id: Entity },
+    Dragging { offset: WorldVec2, id: Entity },
     Idle,
 }
 impl DraggingState {

@@ -1,9 +1,8 @@
 use bevy::{
     app::{FixedUpdate, Plugin},
     ecs::{component::Component, system::Query},
-    math::{Vec2, Vec3Swizzles},
-    transform::components::Transform,
 };
+use bevy_world_space::{position::Position, world_unit::WorldVec2};
 
 pub struct InertiaParams {
     jiggle: f32,
@@ -20,27 +19,27 @@ impl InertiaParams {
 
 #[derive(Component)]
 pub struct Inertia {
-    pub target_position: Vec2,
-    velocity: Vec2,
+    pub target_position: WorldVec2,
+    velocity: WorldVec2,
     params: InertiaParams,
 }
 impl Inertia {
-    pub fn new(target_position: Vec2, params: InertiaParams) -> Self {
+    pub fn new(target_position: WorldVec2, params: InertiaParams) -> Self {
         Self {
             target_position,
-            velocity: Vec2::ZERO,
+            velocity: WorldVec2::ZERO,
             params,
         }
     }
 }
 
-fn apply_inertia(mut inertia_query: Query<(&mut Inertia, &mut Transform)>) {
-    for (mut inertia, mut transform) in &mut inertia_query {
-        let direction = inertia.target_position - transform.translation.xy();
+fn apply_inertia(mut inertia_query: Query<(&mut Inertia, &mut Position)>) {
+    for (mut inertia, mut position) in &mut inertia_query {
+        let direction = inertia.target_position - position.pos;
         inertia.velocity =
             inertia.params.jiggle * inertia.velocity + inertia.params.snap * direction;
-        transform.translation.x += inertia.velocity.x;
-        transform.translation.y += inertia.velocity.y;
+        position.pos.x += inertia.velocity.x;
+        position.pos.y += inertia.velocity.y;
     }
 }
 
