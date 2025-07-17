@@ -12,4 +12,7 @@ impl BoundingBox {
     pub fn collides(&self, position: &Position, collision_point: WorldVec2) -> bool {
         self.bounding_box.contains(collision_point - position.pos)
     }
+    pub fn bounding_box(&self) -> &WorldRect{
+        &self.bounding_box
+    }
 }

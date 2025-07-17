@@ -1,11 +1,12 @@
 mod bank;
+mod bounding_box;
 mod circle;
+mod debug;
 mod framerate_counter;
 mod inertia;
 mod mouse_drag;
 mod palette;
 mod pool;
-mod bounding_box;
 
 use bank::BankPlugin;
 use bevy::{DefaultPlugins, app::App, prelude::PluginGroup};
@@ -15,6 +16,8 @@ use framerate_counter::FrameratePlugin;
 use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
 use pool::PoolPlugin;
+
+use crate::debug::DebugPlugins;
 
 fn main() {
     println!("Git Test");
@@ -30,5 +33,6 @@ fn main() {
         .add_plugins(InertiaPlugin)
         .add_plugins(PoolPlugin)
         .add_plugins(BankPlugin)
+        .add_plugins(DebugPlugins)
         .run();
 }
