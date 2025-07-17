@@ -5,6 +5,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
+        query::Without,
         system::{Commands, Query, Res, ResMut},
     },
     hierarchy::BuildChildren,
@@ -24,7 +25,10 @@ use bevy_world_space::{
 use crate::bounding_box::BoundingBox;
 
 #[derive(Component)]
-struct BoxSkeleton;
+struct BoxSkeleton {
+    parent_id: Entity,
+    offset: WorldVec2,
+}
 
 fn toggle(
     keys: Res<ButtonInput<KeyCode>>,
@@ -56,17 +60,33 @@ fn toggle(
         let mesh_component = Mesh2d(mesh);
         let color_component = MeshMaterial2d(material);
 
-        let bb_id = commands
-            .spawn((BoxSkeleton, position, mesh_component, color_component))
-            .id();
+        commands.spawn((
+            BoxSkeleton {
+                parent_id: id,
+                offset: bounding_box.bounding_box().center(),
+            },
+            position,
+            mesh_component,
+            color_component,
+        ));
+    }
+}
 
-        commands.entity(id).add_child(bb_id);
+fn update_position(
+    mut box_skeleton_query: Query<(&BoxSkeleton, &mut Position)>,
+    parent_query: Query<&Position, Without<BoxSkeleton>>,
+) {
+    for (box_skeleton, mut position) in &mut box_skeleton_query {
+        if let Ok(pos) = parent_query.get(box_skeleton.parent_id) {
+            position.pos = pos.pos + box_skeleton.offset;
+        }
     }
 }
 #[derive(Default)]
 pub struct BoundingBoxVisualizationPlugin;
 impl Plugin for BoundingBoxVisualizationPlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Update, toggle);
+        app.add_systems(Update, toggle)
+            .add_systems(Update, update_position);
     }
 }
