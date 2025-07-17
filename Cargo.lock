@@ -297,7 +297,7 @@ dependencies = [
 [[package]]
 name = "bevy-world-space"
 version = "0.1.0"
-source = "git+https://github.com/ClaytonKnittel/bevy-world-space.git?rev=e23e8e25abeb0a3737267d65ec00f2dd36a3d825#e23e8e25abeb0a3737267d65ec00f2dd36a3d825"
+source = "git+https://github.com/ClaytonKnittel/bevy-world-space.git?rev=59937a80e7b204f9f638085ffe2db614962a5bba#59937a80e7b204f9f638085ffe2db614962a5bba"
 dependencies = [
  "bevy",
  "ordered-float",

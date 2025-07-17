@@ -5,6 +5,7 @@ mod inertia;
 mod mouse_drag;
 mod palette;
 mod pool;
+mod bounding_box;
 
 use bank::BankPlugin;
 use bevy::{DefaultPlugins, app::App, prelude::PluginGroup};

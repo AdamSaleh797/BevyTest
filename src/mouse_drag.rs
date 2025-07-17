@@ -7,7 +7,6 @@ use bevy::{
         system::{Commands, Query, Res, ResMut, Resource, Single},
     },
     input::{ButtonInput, mouse::MouseButton},
-    math::Vec2,
     window::{PrimaryWindow, Window},
 };
 use bevy_world_space::{
@@ -16,27 +15,34 @@ use bevy_world_space::{
     world_unit::{AspectRatio, WorldUnit, WorldVec2},
 };
 
-use crate::inertia::{Inertia, InertiaParams};
+use crate::{
+    bounding_box::BoundingBox,
+    inertia::{Inertia, InertiaParams},
+};
 
 //mouse inputs shouldnt have draggable/window params fix later
 fn mouse_inputs(
     mut commands: Commands,
     input: Res<ButtonInput<MouseButton>>,
     mut dragging: ResMut<DraggingState>,
-    draggable_query: Query<(&Position, Entity), With<Draggable>>,
+    draggable_query: Query<(&Position, &BoundingBox, Entity), With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
     win_info: Res<WinInfo>,
     aspect_ratio: Res<AspectRatio>,
 ) {
     if let Some(cursor_position) = cursor_position(&window, &win_info, &aspect_ratio) {
-        for (position, id) in &draggable_query {
-            let offset = position.pos - cursor_position;
-            if offset.length() <= WorldUnit::ONE && input.just_pressed(MouseButton::Left) {
-                *dragging = DraggingState::Dragging { offset, id };
-                commands
-                    .entity(id)
-                    .insert(Inertia::new(position.pos, InertiaParams::plunging()));
-                break;
+        if input.just_pressed(MouseButton::Left) {
+            for (position, bounding_box, id) in &draggable_query {
+                if bounding_box.collides(position, cursor_position) {
+                    *dragging = DraggingState::Dragging {
+                        offset: position.pos - cursor_position,
+                        id,
+                    };
+                    commands
+                        .entity(id)
+                        .insert(Inertia::new(position.pos, InertiaParams::plunging()));
+                    break;
+                }
             }
         }
     }
