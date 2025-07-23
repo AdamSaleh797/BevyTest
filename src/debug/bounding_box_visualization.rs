@@ -5,22 +5,22 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
-        query::Without,
-        system::{Commands, Query, Res, ResMut},
+        query::{With, Without},
+        system::{Commands, Query, Res, ResMut, Resource},
     },
     input::{ButtonInput, keyboard::KeyCode},
-    log::info,
     math::primitives::Rectangle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
 };
-use bevy_world_space::{
-    position::Position,
-    win_info::WinInfo,
-    world_unit::{AspectRatio, WorldVec2},
-};
+use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::WorldVec2};
 
 use crate::bounding_box::BoundingBox;
+
+#[derive(Resource, Default)]
+struct VisualizationState {
+    visualization_on: bool,
+}
 
 #[derive(Component)]
 struct BoxSkeleton {
@@ -31,20 +31,40 @@ struct BoxSkeleton {
 fn toggle(
     keys: Res<ButtonInput<KeyCode>>,
     bounding_box_query: Query<(&BoundingBox, Entity)>,
+    box_skeleton_query: Query<Entity, With<BoxSkeleton>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut commands: Commands,
+    commands: Commands,
+    mut visualization_state: ResMut<VisualizationState>,
     win_info: Res<WinInfo>,
-    aspect_ratio: Res<AspectRatio>,
 ) {
     if !keys.just_pressed(KeyCode::KeyB) {
         return;
     }
-    info!("pressed b");
+    if visualization_state.visualization_on {
+        disable_visualization(box_skeleton_query, commands);
+        visualization_state.visualization_on = false;
+    } else {
+        enable_visualization(
+            bounding_box_query,
+            &mut meshes,
+            &mut materials,
+            commands,
+            &win_info,
+        );
+        visualization_state.visualization_on = true;
+    }
+}
+
+fn enable_visualization(
+    bounding_box_query: Query<(&BoundingBox, Entity)>,
+    meshes: &mut Assets<Mesh>,
+    materials: &mut Assets<ColorMaterial>,
+    mut commands: Commands,
+    win_info: &WinInfo,
+) {
     for (bounding_box, id) in &bounding_box_query {
-        let rectangle = bounding_box
-            .bounding_box()
-            .to_rect(&win_info, &aspect_ratio);
+        let rectangle = bounding_box.bounding_box().to_rect(win_info);
         let mesh = meshes.add(Rectangle::new(rectangle.width(), rectangle.height()));
         let color = Color::srgb(0., 1., 0.);
         let material = materials.add(color);
@@ -70,6 +90,15 @@ fn toggle(
     }
 }
 
+fn disable_visualization(
+    box_skeleton_query: Query<Entity, With<BoxSkeleton>>,
+    mut commands: Commands,
+) {
+    for (box_skeleton) in &box_skeleton_query {
+        commands.entity(box_skeleton).despawn();
+    }
+}
+
 fn update_position(
     mut box_skeleton_query: Query<(&BoxSkeleton, &mut Position)>,
     parent_query: Query<&Position, Without<BoxSkeleton>>,
@@ -80,11 +109,13 @@ fn update_position(
         }
     }
 }
+
 #[derive(Default)]
 pub struct BoundingBoxVisualizationPlugin;
 impl Plugin for BoundingBoxVisualizationPlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Update, toggle)
+        app.init_resource::<VisualizationState>()
+            .add_systems(Update, toggle)
             .add_systems(Update, update_position);
     }
 }

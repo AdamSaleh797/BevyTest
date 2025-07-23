@@ -6,7 +6,7 @@ use bevy::{
         system::{Commands, ResMut, Single},
     },
     math::primitives::Ellipse,
-    render::mesh::{Mesh, Mesh2d},
+    render::mesh::Mesh2d,
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 use bevy_world_space::{
@@ -14,7 +14,10 @@ use bevy_world_space::{
     world_unit::{WorldUnit, WorldVec2},
 };
 
-use crate::palette::{Palette, PrimaryColor};
+use crate::{
+    palette::{Palette, PrimaryColor},
+    shapes::RenderingParams,
+};
 
 #[derive(Component)]
 struct Pool {
@@ -42,20 +45,16 @@ impl Pool {
     }
 }
 
-fn setup(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    mut commands: Commands,
-) {
+fn setup(mut rendering_params: RenderingParams, mut commands: Commands) {
     let pool = Pool::new();
 
     //shape of pool
     let pool_shape = Ellipse::new(100., 60.);
-    let mesh = meshes.add(pool_shape);
+    let mesh = rendering_params.meshes.add(pool_shape);
 
     //derive color of pool
     let color = pool.color().to_bevy_color();
-    let material = materials.add(color);
+    let material = rendering_params.materials.add(color);
 
     let position = Position::new(
         WorldVec2::new(WorldUnit::ZERO, WorldUnit::ONE * 5.),

@@ -9,11 +9,7 @@ use bevy::{
     input::{ButtonInput, mouse::MouseButton},
     window::{PrimaryWindow, Window},
 };
-use bevy_world_space::{
-    position::Position,
-    win_info::WinInfo,
-    world_unit::{AspectRatio, WorldUnit, WorldVec2},
-};
+use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::WorldVec2};
 
 use crate::{
     bounding_box::BoundingBox,
@@ -28,9 +24,8 @@ fn mouse_inputs(
     draggable_query: Query<(&Position, &BoundingBox, Entity), With<Draggable>>,
     window: Single<&Window, With<PrimaryWindow>>,
     win_info: Res<WinInfo>,
-    aspect_ratio: Res<AspectRatio>,
 ) {
-    if let Some(cursor_position) = cursor_position(&window, &win_info, &aspect_ratio) {
+    if let Some(cursor_position) = cursor_position(&window, &win_info) {
         if input.just_pressed(MouseButton::Left) {
             for (position, bounding_box, id) in &draggable_query {
                 if bounding_box.collides(position, cursor_position) {
@@ -59,7 +54,6 @@ fn drag(
     window: Single<&Window, With<PrimaryWindow>>,
     dragging: Res<DraggingState>,
     win_info: Res<WinInfo>,
-    aspect_ratio: Res<AspectRatio>,
 ) {
     // let offset = match *dragging {
     //     DraggingState::Idle => return,
@@ -71,20 +65,16 @@ fn drag(
     let Ok(mut inertia) = query.get_mut(id) else {
         return;
     };
-    if let Some(cursor_position) = cursor_position(&window, &win_info, &aspect_ratio) {
+    if let Some(cursor_position) = cursor_position(&window, &win_info) {
         inertia.target_position.x = cursor_position.x + offset.x;
         inertia.target_position.y = cursor_position.y + offset.y;
     }
 }
 
-fn cursor_position(
-    window: &Window,
-    win_info: &WinInfo,
-    aspect_ratio: &AspectRatio,
-) -> Option<WorldVec2> {
-    window.cursor_position().map(|cursor_position| {
-        WorldVec2::from_window_screen_pos(cursor_position, win_info, aspect_ratio)
-    })
+fn cursor_position(window: &Window, win_info: &WinInfo) -> Option<WorldVec2> {
+    window
+        .cursor_position()
+        .map(|cursor_position| WorldVec2::from_window_screen_pos(cursor_position, win_info))
 }
 
 #[derive(Component)]

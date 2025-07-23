@@ -1,14 +1,10 @@
 use bevy::{
     app::{Plugin, Startup},
-    asset::Assets,
     color::Color,
-    ecs::{
-        component::Component,
-        system::{Commands, ResMut},
-    },
+    ecs::{component::Component, system::Commands},
     math::primitives::Circle,
-    render::mesh::{Mesh, Mesh2d},
-    sprite::{ColorMaterial, MeshMaterial2d},
+    render::mesh::Mesh2d,
+    sprite::MeshMaterial2d,
 };
 use bevy_world_space::{
     position::Position,
@@ -16,22 +12,18 @@ use bevy_world_space::{
     world_unit::{WorldUnit, WorldVec2},
 };
 
-use crate::{bounding_box::BoundingBox, mouse_drag::Draggable};
+use crate::{bounding_box::BoundingBox, mouse_drag::Draggable, shapes::RenderingParams};
 
 #[derive(Component)]
 struct CircleId;
 
-fn setup(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    mut commands: Commands,
-) {
+fn setup(mut rendering_params: RenderingParams, mut commands: Commands) {
     const PIXEL_RADIUS: f32 = 50.;
     const RADIUS: WorldUnit = WorldUnit::new(1.5);
     let circle = Circle::new(PIXEL_RADIUS);
-    let mesh = meshes.add(circle);
+    let mesh = rendering_params.meshes.add(circle);
     let color = Color::srgb(1., 0., 0.);
-    let material = materials.add(color);
+    let material = rendering_params.materials.add(color);
     let bounding_box = BoundingBox::new(WorldRect::from_center_half_size(
         WorldVec2::ZERO,
         WorldVec2 {

@@ -1,22 +1,25 @@
 use bevy::{
     app::{Plugin, Startup},
-    asset::Assets,
     ecs::{
         component::Component,
-        system::{Commands, Res, ResMut},
+        system::{Commands, Res},
     },
     log::info,
     math::primitives::CircularSector,
-    render::mesh::{Mesh, Mesh2d},
+    render::mesh::Mesh2d,
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 use bevy_world_space::{
     position::Position,
-    world_unit::{AspectRatio, WorldUnit, WorldVec2},
+    win_info::WinInfo,
+    world_unit::{WorldUnit, WorldVec2},
 };
 use strum::IntoEnumIterator;
 
-use crate::palette::{Palette, PrimaryColor, PrimaryColorTable};
+use crate::{
+    palette::{PrimaryColor, PrimaryColorTable},
+    shapes::RenderingParams,
+};
 
 #[derive(Component)]
 struct Bank {
@@ -32,13 +35,12 @@ impl Bank {
 
 fn bank_icon(
     icon_color: PrimaryColor,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<ColorMaterial>,
+    rendering_params: &mut RenderingParams,
 ) -> (Mesh2d, MeshMaterial2d<ColorMaterial>) {
     let bank_icon_shape = CircularSector::from_degrees(15., 180.);
-    let mesh = meshes.add(bank_icon_shape);
+    let mesh = rendering_params.meshes.add(bank_icon_shape);
     let color = icon_color.to_bevy_color();
-    let material = materials.add(color);
+    let material = rendering_params.materials.add(color);
 
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
@@ -46,12 +48,7 @@ fn bank_icon(
     (mesh_component, color_component)
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    aspect_ratio: Res<AspectRatio>,
-) {
+fn setup(mut commands: Commands, mut rendering_params: RenderingParams, win_info: Res<WinInfo>) {
     let bank = Bank::new();
 
     info!("setup!");
@@ -59,14 +56,14 @@ fn setup(
         for count in 0..bank.count[color] {
             let position = Position::new(
                 WorldVec2::new(
-                    WorldUnit::left(&aspect_ratio) + (count + 1) as f32 * WorldUnit::ONE,
-                    WorldUnit::top(&aspect_ratio) - (row + 1) as f32 * WorldUnit::ONE,
+                    WorldUnit::left(win_info.aspect_ratio()) + (count + 1) as f32 * WorldUnit::ONE,
+                    WorldUnit::top(win_info.aspect_ratio()) - (row + 1) as f32 * WorldUnit::ONE,
                 ),
                 WorldUnit::ONE,
                 30,
                 0.,
             );
-            let (mesh_component, color_component) = bank_icon(color, &mut meshes, &mut materials);
+            let (mesh_component, color_component) = bank_icon(color, &mut rendering_params);
             commands.spawn((position, mesh_component, color_component));
         }
     }
