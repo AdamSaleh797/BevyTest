@@ -8,18 +8,16 @@ use bevy::{
         query::Without,
         system::{Commands, Query, Res, ResMut},
     },
-    hierarchy::BuildChildren,
     input::{ButtonInput, keyboard::KeyCode},
     log::info,
-    math::{Rect, primitives::Rectangle},
+    math::primitives::Rectangle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 use bevy_world_space::{
     position::Position,
-    rect::WorldRect,
     win_info::WinInfo,
-    world_unit::{AspectRatio, WorldUnit, WorldVec2},
+    world_unit::{AspectRatio, WorldVec2},
 };
 
 use crate::bounding_box::BoundingBox;

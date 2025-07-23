@@ -27,7 +27,7 @@ fn setup(
     mut commands: Commands,
 ) {
     const PIXEL_RADIUS: f32 = 50.;
-    const RADIUS: WorldUnit = WorldUnit::new(3.);
+    const RADIUS: WorldUnit = WorldUnit::new(1.5);
     let circle = Circle::new(PIXEL_RADIUS);
     let mesh = meshes.add(circle);
     let color = Color::srgb(1., 0., 0.);
@@ -40,7 +40,7 @@ fn setup(
         },
     ));
 
-    let position = Position::new(WorldVec2::ZERO, RADIUS, (2. * PIXEL_RADIUS) as u32, 0.);
+    let position = Position::new(WorldVec2::ZERO, 2. * RADIUS, (2. * PIXEL_RADIUS) as u32, 0.);
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
