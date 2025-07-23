@@ -3,19 +3,16 @@ use bevy::{
     asset::Assets,
     color::Color,
     ecs::{
-        component::Component,
-        entity::Entity,
-        query::{With, Without},
-        system::{Commands, Query, Res, ResMut, Resource},
+        component::Component, entity::Entity, query::{With, Without}, schedule::IntoSystemConfigs, system::{Commands, Query, Res, ResMut, Resource}
     },
-    input::{ButtonInput, keyboard::KeyCode},
+    input::{keyboard::KeyCode, ButtonInput},
     math::primitives::Rectangle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::WorldVec2};
 
-use crate::bounding_box::BoundingBox;
+use crate::{bounding_box::BoundingBox, shapes::RenderingParams};
 
 #[derive(Resource, Default)]
 struct VisualizationState {
@@ -32,8 +29,7 @@ fn toggle(
     keys: Res<ButtonInput<KeyCode>>,
     bounding_box_query: Query<(&BoundingBox, Entity)>,
     box_skeleton_query: Query<Entity, With<BoxSkeleton>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    rendering_params: RenderingParams,
     commands: Commands,
     mut visualization_state: ResMut<VisualizationState>,
     win_info: Res<WinInfo>,
@@ -45,29 +41,24 @@ fn toggle(
         disable_visualization(box_skeleton_query, commands);
         visualization_state.visualization_on = false;
     } else {
-        enable_visualization(
-            bounding_box_query,
-            &mut meshes,
-            &mut materials,
-            commands,
-            &win_info,
-        );
+        enable_visualization(bounding_box_query, rendering_params, commands, &win_info);
         visualization_state.visualization_on = true;
     }
 }
 
 fn enable_visualization(
     bounding_box_query: Query<(&BoundingBox, Entity)>,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<ColorMaterial>,
+    mut rendering_params: RenderingParams,
     mut commands: Commands,
     win_info: &WinInfo,
 ) {
     for (bounding_box, id) in &bounding_box_query {
         let rectangle = bounding_box.bounding_box().to_rect(win_info);
-        let mesh = meshes.add(Rectangle::new(rectangle.width(), rectangle.height()));
+        let mesh = rendering_params
+            .meshes
+            .add(Rectangle::new(rectangle.width(), rectangle.height()));
         let color = Color::srgb(0., 1., 0.);
-        let material = materials.add(color);
+        let material = rendering_params.materials.add(color);
 
         let position = Position::new(
             bounding_box.bounding_box().center(),
@@ -94,7 +85,7 @@ fn disable_visualization(
     box_skeleton_query: Query<Entity, With<BoxSkeleton>>,
     mut commands: Commands,
 ) {
-    for (box_skeleton) in &box_skeleton_query {
+    for box_skeleton in &box_skeleton_query {
         commands.entity(box_skeleton).despawn();
     }
 }
