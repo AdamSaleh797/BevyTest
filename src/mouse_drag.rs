@@ -89,9 +89,6 @@ impl DraggingState {
     fn new() -> Self {
         Self::Idle
     }
-    fn is_idle(&self) -> bool {
-        matches!(self, Self::Idle)
-    }
 }
 
 pub struct MouseDragPlugin;

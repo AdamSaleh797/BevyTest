@@ -1,6 +1,5 @@
 use bevy::{
     app::{Plugin, Update},
-    asset::Assets,
     color::Color,
     ecs::{
         component::Component,
@@ -11,8 +10,8 @@ use bevy::{
     },
     input::{ButtonInput, keyboard::KeyCode},
     math::primitives::Rectangle,
-    render::mesh::{Mesh, Mesh2d},
-    sprite::{ColorMaterial, MeshMaterial2d},
+    render::mesh::Mesh2d,
+    sprite::MeshMaterial2d,
 };
 use bevy_world_space::{position::Position, win_info::WinInfo, world_unit::WorldVec2};
 
