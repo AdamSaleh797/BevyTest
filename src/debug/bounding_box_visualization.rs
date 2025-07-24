@@ -3,9 +3,13 @@ use bevy::{
     asset::Assets,
     color::Color,
     ecs::{
-        component::Component, entity::Entity, query::{With, Without}, schedule::IntoSystemConfigs, system::{Commands, Query, Res, ResMut, Resource}
+        component::Component,
+        entity::Entity,
+        query::{With, Without},
+        schedule::IntoSystemConfigs,
+        system::{Commands, Query, Res, ResMut, Resource},
     },
-    input::{keyboard::KeyCode, ButtonInput},
+    input::{ButtonInput, keyboard::KeyCode},
     math::primitives::Rectangle,
     render::mesh::{Mesh, Mesh2d},
     sprite::{ColorMaterial, MeshMaterial2d},
@@ -107,6 +111,6 @@ impl Plugin for BoundingBoxVisualizationPlugin {
     fn build(&self, app: &mut bevy::app::App) {
         app.init_resource::<VisualizationState>()
             .add_systems(Update, toggle)
-            .add_systems(Update, update_position);
+            .add_systems(Update, update_position.after(toggle));
     }
 }
