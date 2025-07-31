@@ -10,25 +10,20 @@ pub enum PrimaryColor {
 impl PrimaryColor {
     pub fn to_bevy_color(self) -> Color {
         match self {
-            PrimaryColor::Red => Color::srgb_u8(244, 56, 1),
-            PrimaryColor::Yellow => Color::srgb_u8(240, 196, 1),
-            PrimaryColor::Blue => Color::srgb_u8(44, 104, 187),
+            Self::Red => Color::srgb_u8(244, 56, 1),
+            Self::Yellow => Color::srgb_u8(240, 196, 1),
+            Self::Blue => Color::srgb_u8(44, 104, 187),
         }
     }
 
-    #[cfg(test)]
     pub fn blend(self, other: Self) -> Palette {
         match (self, other) {
-            (PrimaryColor::Red, PrimaryColor::Red) => Palette::Red,
-            (PrimaryColor::Yellow, PrimaryColor::Yellow) => Palette::Yellow,
-            (PrimaryColor::Blue, PrimaryColor::Blue) => Palette::Blue,
-            (PrimaryColor::Yellow, PrimaryColor::Blue)
-            | (PrimaryColor::Blue, PrimaryColor::Yellow) => Palette::Green,
-            (PrimaryColor::Red, PrimaryColor::Yellow)
-            | (PrimaryColor::Yellow, PrimaryColor::Red) => Palette::Orange,
-            (PrimaryColor::Red, PrimaryColor::Blue) | (PrimaryColor::Blue, PrimaryColor::Red) => {
-                Palette::Purple
-            }
+            (Self::Red, Self::Red) => Palette::Red,
+            (Self::Yellow, Self::Yellow) => Palette::Yellow,
+            (Self::Blue, Self::Blue) => Palette::Blue,
+            (Self::Yellow, Self::Blue) | (Self::Blue, Self::Yellow) => Palette::Green,
+            (Self::Red, Self::Yellow) | (Self::Yellow, Self::Red) => Palette::Orange,
+            (Self::Red, Self::Blue) | (Self::Blue, Self::Red) => Palette::Purple,
         }
     }
 }
@@ -56,12 +51,12 @@ impl Palette {
 
     pub fn constituents(self) -> (PrimaryColor, PrimaryColor) {
         match self {
-            Palette::Red => (PrimaryColor::Red, PrimaryColor::Red),
-            Palette::Yellow => (PrimaryColor::Yellow, PrimaryColor::Yellow),
-            Palette::Blue => (PrimaryColor::Blue, PrimaryColor::Blue),
-            Palette::Green => (PrimaryColor::Yellow, PrimaryColor::Blue),
-            Palette::Orange => (PrimaryColor::Red, PrimaryColor::Yellow),
-            Palette::Purple => (PrimaryColor::Red, PrimaryColor::Blue),
+            Self::Red => (PrimaryColor::Red, PrimaryColor::Red),
+            Self::Yellow => (PrimaryColor::Yellow, PrimaryColor::Yellow),
+            Self::Blue => (PrimaryColor::Blue, PrimaryColor::Blue),
+            Self::Green => (PrimaryColor::Yellow, PrimaryColor::Blue),
+            Self::Orange => (PrimaryColor::Red, PrimaryColor::Yellow),
+            Self::Purple => (PrimaryColor::Red, PrimaryColor::Blue),
         }
     }
 }
