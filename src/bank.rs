@@ -4,7 +4,6 @@ use bevy::{
         component::Component,
         system::{Commands, Res},
     },
-    log::info,
     math::primitives::CircularSector,
     render::mesh::Mesh2d,
     sprite::{ColorMaterial, MeshMaterial2d},
@@ -51,7 +50,6 @@ fn bank_icon(
 fn setup(mut commands: Commands, mut rendering_params: RenderingParams, win_info: Res<WinInfo>) {
     let bank = Bank::new();
 
-    info!("setup!");
     for (row, color) in PrimaryColor::iter().enumerate() {
         for count in 0..bank.count[color] {
             let position = Position::new(
