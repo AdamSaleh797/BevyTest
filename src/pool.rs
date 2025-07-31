@@ -30,7 +30,8 @@ impl Pool {
         }
     }
     fn color(&self) -> Palette {
-        self.colors.0.blend(self.colors.1)
+        let (c1, c2) = self.colors;
+        c1.blend(c2)
     }
 }
 
