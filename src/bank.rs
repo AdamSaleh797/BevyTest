@@ -1,11 +1,12 @@
 use bevy::{
-    app::{FixedUpdate, Plugin, Startup},
+    app::{FixedUpdate, Plugin, Startup, Update},
     ecs::{
         bundle::Bundle,
         component::Component,
-        event::{Event, EventReader},
+        event::{Event, EventReader, EventWriter},
         system::{Commands, Query, Res, ResMut, Resource},
     },
+    input::{ButtonInput, keyboard::KeyCode},
     math::primitives::CircularSector,
     render::{mesh::Mesh2d, view::Visibility},
     sprite::{ColorMaterial, MeshMaterial2d},
@@ -112,16 +113,17 @@ fn update_bank(
 ) {
     let mut updated = false;
     for &TakeBankColorEvent(color) in take_color.read() {
-        debug_assert!(bank.count[color] >= 2);
-        bank.count[color] -= 2;
+        // TODO: Add these asserts back once game logic is implemented.
+        // debug_assert!(bank.count[color] >= 2);
+        bank.count[color] = bank.count[color].saturating_sub(2);
         updated = true;
     }
     for &PlayPieceColorEvent(color) in play_piece.read() {
         let (c1, c2) = color.constituents();
-        debug_assert!(bank.count[c1] < Bank::COLOR_SLICE_COUNT);
-        debug_assert!(bank.count[c2] < Bank::COLOR_SLICE_COUNT);
-        bank.count[c1] += 1;
-        bank.count[c2] += 1;
+        // debug_assert!(bank.count[c1] < Bank::COLOR_SLICE_COUNT);
+        // debug_assert!(bank.count[c2] < Bank::COLOR_SLICE_COUNT);
+        bank.count[c1] = (bank.count[c1] + 1).min(Bank::COLOR_SLICE_COUNT);
+        bank.count[c2] = (bank.count[c2] + 1).min(Bank::COLOR_SLICE_COUNT);
         updated = true;
     }
 
@@ -136,6 +138,43 @@ fn update_bank(
     }
 }
 
+fn test(
+    input: Res<ButtonInput<KeyCode>>,
+    mut take_color: EventWriter<TakeBankColorEvent>,
+    mut play_piece: EventWriter<PlayPieceColorEvent>,
+) {
+    if !input.pressed(KeyCode::ShiftLeft) {
+        if input.just_pressed(KeyCode::KeyR) {
+            take_color.send(TakeBankColorEvent(PrimaryColor::Red));
+        }
+        if input.just_pressed(KeyCode::KeyY) {
+            take_color.send(TakeBankColorEvent(PrimaryColor::Yellow));
+        }
+        if input.just_pressed(KeyCode::KeyB) {
+            take_color.send(TakeBankColorEvent(PrimaryColor::Blue));
+        }
+    } else {
+        if input.just_pressed(KeyCode::KeyR) {
+            play_piece.send(PlayPieceColorEvent(Palette::Red));
+        }
+        if input.just_pressed(KeyCode::KeyY) {
+            play_piece.send(PlayPieceColorEvent(Palette::Yellow));
+        }
+        if input.just_pressed(KeyCode::KeyB) {
+            play_piece.send(PlayPieceColorEvent(Palette::Blue));
+        }
+        if input.just_pressed(KeyCode::KeyG) {
+            play_piece.send(PlayPieceColorEvent(Palette::Green));
+        }
+        if input.just_pressed(KeyCode::KeyO) {
+            play_piece.send(PlayPieceColorEvent(Palette::Orange));
+        }
+        if input.just_pressed(KeyCode::KeyP) {
+            play_piece.send(PlayPieceColorEvent(Palette::Purple));
+        }
+    }
+}
+
 pub struct BankPlugin;
 impl Plugin for BankPlugin {
     fn build(&self, app: &mut bevy::app::App) {
@@ -143,6 +182,7 @@ impl Plugin for BankPlugin {
             .add_event::<PlayPieceColorEvent>()
             .init_resource::<Bank>()
             .add_systems(Startup, setup)
-            .add_systems(FixedUpdate, update_bank);
+            .add_systems(FixedUpdate, update_bank)
+            .add_systems(Update, test);
     }
 }
