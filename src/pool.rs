@@ -30,18 +30,8 @@ impl Pool {
         }
     }
     fn color(&self) -> Palette {
-        match self.colors {
-            (PrimaryColor::Yellow, PrimaryColor::Yellow) => Palette::Yellow,
-            (PrimaryColor::Red, PrimaryColor::Red) => Palette::Red,
-            (PrimaryColor::Blue, PrimaryColor::Blue) => Palette::Blue,
-            (PrimaryColor::Yellow, PrimaryColor::Red)
-            | (PrimaryColor::Red, PrimaryColor::Yellow) => Palette::Orange,
-            (PrimaryColor::Yellow, PrimaryColor::Blue)
-            | (PrimaryColor::Blue, PrimaryColor::Yellow) => Palette::Green,
-            (PrimaryColor::Blue, PrimaryColor::Red) | (PrimaryColor::Red, PrimaryColor::Blue) => {
-                Palette::Purple
-            }
-        }
+        let (c1, c2) = self.colors;
+        c1.blend(c2)
     }
 }
 
