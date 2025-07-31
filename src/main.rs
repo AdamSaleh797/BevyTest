@@ -8,6 +8,7 @@ mod mouse_drag;
 mod palette;
 mod pool;
 mod shapes;
+mod ui_components;
 
 use bank::BankPlugin;
 use bevy::{DefaultPlugins, app::App, prelude::PluginGroup};
@@ -18,7 +19,7 @@ use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
 use pool::PoolPlugin;
 
-use crate::debug::DebugPlugins;
+use crate::{debug::DebugPlugins, ui_components::UIPlugins};
 
 fn main() {
     println!("Git Test");
@@ -35,5 +36,6 @@ fn main() {
         .add_plugins(PoolPlugin)
         .add_plugins(BankPlugin)
         .add_plugins(DebugPlugins)
+        .add_plugins(UIPlugins)
         .run();
 }
