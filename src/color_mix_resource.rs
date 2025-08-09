@@ -1,6 +1,6 @@
 use bevy::{
     app::{Plugin, Startup},
-    ecs::{component::Component, system::Commands},
+    ecs::system::{Commands, Resource},
 };
 
 use crate::color_mix::game::ColorMix;
@@ -17,7 +17,9 @@ impl ColorMixRes {
 }
 
 pub fn spawn_color_mix(mut commands: Commands) {
-    commands.insert_resource(ColorMix::new(5));
+    commands.insert_resource(ColorMixRes {
+        color_mix: ColorMix::new(5),
+    });
 }
 
 pub struct ColorMixPlugin;

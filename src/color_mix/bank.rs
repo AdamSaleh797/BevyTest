@@ -1,6 +1,9 @@
 use std::fmt::Display;
 
-use crate::color_mix::{color::Color, cube_set::PrimaryColorSet};
+use crate::color_mix::{
+    color::{Color, PrimaryColor},
+    cube_set::PrimaryColorSet,
+};
 
 pub struct Bank {
     colors: PrimaryColorSet,
@@ -11,6 +14,10 @@ impl Bank {
         Self {
             colors: PrimaryColorSet::with_initial_count(initial_count),
         }
+    }
+
+    pub fn remaining(&self, color: PrimaryColor) -> u32 {
+        self.colors.capacity(color)
     }
 
     /// Returns true if the color was successfully withdrawn from the bank, false otherwise.

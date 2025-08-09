@@ -22,7 +22,7 @@ use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
 use pool::PoolPlugin;
 
-use crate::{debug::DebugPlugins, ui_components::UIPlugins};
+use crate::{color_mix_resource::ColorMixPlugin, debug::DebugPlugins, ui_components::UIPlugins};
 
 fn main() {
     println!("Git Test");
@@ -33,6 +33,7 @@ fn main() {
             screen_height: 720.,
         }))
         .add_plugins(FrameratePlugin)
+        .add_plugins(ColorMixPlugin)
         .add_plugins(CirclePlugin)
         .add_plugins(MouseDragPlugin)
         .add_plugins(InertiaPlugin)

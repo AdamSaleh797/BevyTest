@@ -4,7 +4,7 @@ use bevy::{
     ecs::{
         component::Component,
         query::With,
-        system::{Commands, ResMut, Single},
+        system::{Commands, Res, ResMut, Single},
     },
     math::primitives::Ellipse,
     render::mesh::Mesh2d,
@@ -43,7 +43,7 @@ fn setup(mut rendering_params: RenderingParams, mut commands: Commands) {
 }
 
 fn update_color(
-    color_mix: Single<&ColorMixRes>,
+    color_mix: Res<ColorMixRes>,
     pool_query: Single<&mut MeshMaterial2d<ColorMaterial>, With<Pool>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {

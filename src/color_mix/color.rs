@@ -1,5 +1,7 @@
 use std::{error::Error, fmt::Display, str::FromStr};
 
+use strum::{EnumIter, IntoEnumIterator};
+
 use crate::error::{ColorMixError, ColorMixResult};
 
 pub trait IndexedEnum {
@@ -12,7 +14,7 @@ pub trait IndexedEnum {
         Self: Sized;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
 pub enum PrimaryColor {
     Red,
     Yellow,
@@ -21,9 +23,7 @@ pub enum PrimaryColor {
 
 impl PrimaryColor {
     pub fn all_colors() -> impl Iterator<Item = Self> {
-        PrimaryColorIter {
-            val: Some(PrimaryColor::Red),
-        }
+        Self::iter()
     }
 
     pub fn mix(self, other: Self) -> Color {
@@ -111,24 +111,6 @@ impl Display for PrimaryColor {
                 Self::Blue => 'B',
             }
         )
-    }
-}
-
-struct PrimaryColorIter {
-    val: Option<PrimaryColor>,
-}
-
-impl Iterator for PrimaryColorIter {
-    type Item = PrimaryColor;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let res = self.val;
-        self.val = match self.val {
-            Some(PrimaryColor::Red) => Some(PrimaryColor::Yellow),
-            Some(PrimaryColor::Yellow) => Some(PrimaryColor::Blue),
-            Some(PrimaryColor::Blue) | None => None,
-        };
-        res
     }
 }
 
