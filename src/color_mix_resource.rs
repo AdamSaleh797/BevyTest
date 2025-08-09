@@ -3,7 +3,7 @@ use bevy::{
     ecs::system::{Commands, Resource},
 };
 
-use crate::color_mix::game::ColorMix;
+use color_mix::ColorMix;
 
 #[derive(Resource)]
 pub struct ColorMixRes {

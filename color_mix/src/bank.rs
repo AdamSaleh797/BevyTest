@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::color_mix::{
+use crate::{
     color::{Color, PrimaryColor},
     cube_set::PrimaryColorSet,
 };

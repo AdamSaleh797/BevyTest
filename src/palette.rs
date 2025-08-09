@@ -1,6 +1,6 @@
 use bevy::color::Color;
 
-use crate::color_mix::color::{self, PrimaryColor};
+use color_mix::color::{self, PrimaryColor};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Palette {

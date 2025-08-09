@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::color_mix::color::{Color, PrimaryColor};
+use crate::color::{Color, PrimaryColor};
 
 pub struct Pot {
     colors: [PrimaryColor; Self::POT_SIZE],

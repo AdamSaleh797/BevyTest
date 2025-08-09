@@ -1,7 +1,8 @@
 use std::fmt::Display;
 
 use crate::{
-    color_mix::{color::Color, cube_set::CubeSet},
+    color::Color,
+    cube_set::CubeSet,
     error::{ColorMixError, ColorMixResult},
 };
 

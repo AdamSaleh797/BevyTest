@@ -1,13 +1,11 @@
 use std::{error::Error, fmt::Display, str::FromStr};
 
 use crate::{
-    color_mix::{
-        bank::Bank,
-        color::{Color, PrimaryColor},
-        player::Player,
-        pot::Pot,
-    },
+    bank::Bank,
+    color::{Color, PrimaryColor},
     error::{ColorMixError, ColorMixResult},
+    player::Player,
+    pot::Pot,
 };
 
 #[derive(Clone, Copy, Debug)]

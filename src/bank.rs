@@ -15,9 +15,9 @@ use bevy_world_space::{
     win_info::WinInfo,
     world_unit::{WorldUnit, WorldVec2},
 };
+use color_mix::color::PrimaryColor;
 
 use crate::{
-    color_mix::color::PrimaryColor,
     color_mix_resource::{self, ColorMixRes},
     palette::Palette,
     shapes::RenderingParams,

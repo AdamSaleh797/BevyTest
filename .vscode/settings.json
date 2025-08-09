@@ -1,3 +1,7 @@
 {
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+        "./color_mix/Cargo.toml"
+    ],
     "rust-analyzer.check.command": "clippy"
 }

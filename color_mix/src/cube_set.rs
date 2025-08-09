@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{
-    color_mix::color::{Color, IndexedEnum, PrimaryColor},
+    color::{Color, IndexedEnum, PrimaryColor},
     error::{ColorMixError, ColorMixResult},
 };
 
