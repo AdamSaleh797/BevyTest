@@ -12,7 +12,8 @@ use bevy::{
     hierarchy::{BuildChildren, ChildBuild},
     text::{JustifyText, TextColor, TextFont, TextLayout},
     ui::{
-        BackgroundColor, BorderColor, Interaction, JustifyContent, Node, UiRect, Val, widget::Text,
+        BackgroundColor, BorderColor, Interaction, JustifyContent, Node, UiRect, Val,
+        widget::{Button, Text},
     },
     utils::default,
 };
@@ -26,6 +27,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     };
 
     let button = (
+        Button,
         Node {
             width: Val::Px(200.),
             height: Val::Px(200.),
