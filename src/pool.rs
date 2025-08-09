@@ -3,6 +3,7 @@ use bevy::{
     asset::Assets,
     ecs::{
         component::Component,
+        query::With,
         system::{Commands, ResMut, Single},
     },
     math::primitives::Ellipse,
@@ -14,37 +15,20 @@ use bevy_world_space::{
     world_unit::{WorldUnit, WorldVec2},
 };
 
-use crate::{
-    palette::{Palette, PrimaryColor},
-    shapes::RenderingParams,
-};
+use crate::{color_mix_resource::ColorMixRes, palette::Palette, shapes::RenderingParams};
 
 #[derive(Component)]
-struct Pool {
-    colors: (PrimaryColor, PrimaryColor),
-}
-impl Pool {
-    fn new() -> Self {
-        Self {
-            colors: (PrimaryColor::Yellow, PrimaryColor::Yellow),
-        }
-    }
-    fn color(&self) -> Palette {
-        let (c1, c2) = self.colors;
-        c1.blend(c2)
-    }
-}
+struct Pool;
 
 fn setup(mut rendering_params: RenderingParams, mut commands: Commands) {
-    let pool = Pool::new();
-
     //shape of pool
     let pool_shape = Ellipse::new(100., 60.);
     let mesh = rendering_params.meshes.add(pool_shape);
 
     //derive color of pool
-    let color = pool.color().to_bevy_color();
-    let material = rendering_params.materials.add(color);
+    let material = rendering_params
+        .materials
+        .add(Palette::Yellow.to_bevy_color());
 
     let position = Position::new(
         WorldVec2::new(WorldUnit::ZERO, WorldUnit::ONE * 5.),
@@ -55,16 +39,18 @@ fn setup(mut rendering_params: RenderingParams, mut commands: Commands) {
     let mesh_component = Mesh2d(mesh);
     let color_component = MeshMaterial2d(material);
 
-    commands.spawn((pool, position, mesh_component, color_component));
+    commands.spawn((Pool, position, mesh_component, color_component));
 }
 
 fn update_color(
-    pool_query: Single<(&Pool, &mut MeshMaterial2d<ColorMaterial>)>,
+    color_mix: Single<&ColorMixRes>,
+    pool_query: Single<&mut MeshMaterial2d<ColorMaterial>, With<Pool>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let (pool, mut color) = pool_query.into_inner();
+    let mut color = pool_query.into_inner();
 
-    let new_color = pool.color().to_bevy_color();
+    let pool_color = color_mix.color_mix().pot().color();
+    let new_color = Palette::from(pool_color).to_bevy_color();
     let material = materials.add(new_color);
     *color = MeshMaterial2d(material);
 }

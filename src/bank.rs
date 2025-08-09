@@ -4,6 +4,7 @@ use bevy::{
         bundle::Bundle,
         component::Component,
         event::{Event, EventReader, EventWriter},
+        schedule::IntoSystemConfigs,
         system::{Commands, Query, Res, ResMut, Resource},
     },
     input::{ButtonInput, keyboard::KeyCode},
@@ -19,8 +20,7 @@ use bevy_world_space::{
 use strum::IntoEnumIterator;
 
 use crate::{
-    palette::{Palette, PrimaryColor, PrimaryColorTable},
-    shapes::RenderingParams,
+    color_mix::color::PrimaryColor, color_mix_resource, palette::Palette, shapes::RenderingParams,
 };
 
 #[derive(Event)]
@@ -30,19 +30,9 @@ struct TakeBankColorEvent(PrimaryColor);
 struct PlayPieceColorEvent(Palette);
 
 #[derive(Resource)]
-struct Bank {
-    count: PrimaryColorTable<u32>,
-}
+struct Bank;
 impl Bank {
-    const COLOR_SLICE_COUNT: u32 = 5;
     const SECTOR_RADIUS: u32 = 15;
-}
-impl Default for Bank {
-    fn default() -> Self {
-        Self {
-            count: PrimaryColorTable::filled(Self::COLOR_SLICE_COUNT),
-        }
-    }
 }
 
 #[derive(Component)]
@@ -66,7 +56,7 @@ fn bank_icon(
 ) -> (Mesh2d, MeshMaterial2d<ColorMaterial>) {
     let bank_icon_shape = CircularSector::from_degrees(Bank::SECTOR_RADIUS as f32, 180.);
     let mesh = rendering_params.meshes.add(bank_icon_shape);
-    let color = icon_color.to_bevy_color();
+    let color = Palette::from(icon_color).to_bevy_color();
     let material = rendering_params.materials.add(color);
 
     let mesh_component = Mesh2d(mesh);
@@ -180,8 +170,7 @@ impl Plugin for BankPlugin {
     fn build(&self, app: &mut bevy::app::App) {
         app.add_event::<TakeBankColorEvent>()
             .add_event::<PlayPieceColorEvent>()
-            .init_resource::<Bank>()
-            .add_systems(Startup, setup)
+            .add_systems(Startup, setup.after(color_mix_resource::spawn_color_mix))
             .add_systems(FixedUpdate, update_bank)
             .add_systems(Update, test);
     }

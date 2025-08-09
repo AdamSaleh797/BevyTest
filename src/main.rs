@@ -1,7 +1,10 @@
 mod bank;
 mod bounding_box;
 mod circle;
+mod color_mix;
+mod color_mix_resource;
 mod debug;
+mod error;
 mod framerate_counter;
 mod inertia;
 mod mouse_drag;
