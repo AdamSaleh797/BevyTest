@@ -11,7 +11,13 @@ mod shapes;
 mod ui_components;
 
 use bank::BankPlugin;
-use bevy::{DefaultPlugins, app::App, prelude::PluginGroup};
+use bevy::{
+    DefaultPlugins,
+    app::App,
+    asset::{AssetMetaCheck, AssetMode, AssetPlugin},
+    prelude::PluginGroup,
+    utils::default,
+};
 use bevy_world_space::{WorldSpacePlugins, world_init::WorldInitPlugin};
 use circle::CirclePlugin;
 use framerate_counter::FrameratePlugin;
@@ -24,7 +30,11 @@ use crate::{debug::DebugPlugins, ui_components::UIPlugins};
 fn main() {
     println!("Git Test");
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(AssetPlugin {
+            mode: AssetMode::Unprocessed,
+            meta_check: AssetMetaCheck::Never,
+            ..default()
+        }))
         .add_plugins(WorldSpacePlugins.set(WorldInitPlugin {
             screen_width: 1280.,
             screen_height: 720.,
