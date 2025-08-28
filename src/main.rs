@@ -48,6 +48,5 @@ fn main() {
         .add_plugins(PoolPlugin)
         .add_plugins(BankPlugin)
         .add_plugins(DebugPlugins)
-        .add_plugins(UIPlugins)
         .run();
 }
