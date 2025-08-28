@@ -96,6 +96,10 @@ impl ColorMix {
         &self.bank
     }
 
+    pub fn players(&self) -> &(Player, Player) {
+        &self.players
+    }
+
     fn cur_player_mut(&mut self) -> &mut Player {
         if self.p1_turn {
             &mut self.players.0
