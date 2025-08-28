@@ -15,12 +15,28 @@ pub struct Player {
 impl Player {
     pub const STARTING_HP: u32 = 5;
 
-    pub fn add_cube(&mut self, color: Color) {
+    pub fn hp(&self) -> u32 {
+        self.hp
+    }
+
+    pub fn is_dead(&self) -> bool {
+        self.hp == 0
+    }
+
+    pub fn cubes(&self) -> &CubeSet {
+        &self.cubes
+    }
+
+    pub fn ephemeral_cubes(&self) -> &CubeSet {
+        &self.ephemeral_cubes
+    }
+
+    pub(crate) fn add_cube(&mut self, color: Color) {
         self.cubes.insert(color);
     }
 
     /// Returns true if the cube was real and should be removed from the bank.
-    pub fn remove_cube(&mut self, color: Color) -> ColorMixResult<bool> {
+    pub(crate) fn remove_cube(&mut self, color: Color) -> ColorMixResult<bool> {
         if self.ephemeral_cubes.capacity(color) > 0 {
             self.ephemeral_cubes.remove(color)?;
             Ok(false)
@@ -30,24 +46,24 @@ impl Player {
         }
     }
 
-    pub fn double_cubes(&mut self, color: Color) {
+    pub(crate) fn double_cubes(&mut self, color: Color) {
         let total_cubes = self.cubes[color] + self.ephemeral_cubes[color];
         self.ephemeral_cubes.insert_n(color, total_cubes);
     }
 
-    pub fn clear_ephemeral(&mut self) {
+    pub(crate) fn clear_ephemeral(&mut self) {
         self.ephemeral_cubes.clear();
     }
 
-    pub fn damage(&mut self) {
+    pub(crate) fn damage(&mut self) {
         self.hp -= 1;
     }
 
-    pub fn damage_n(&mut self, count: u32) {
+    pub(crate) fn damage_n(&mut self, count: u32) {
         self.hp = self.hp.saturating_sub(count);
     }
 
-    pub fn heal(&mut self) -> ColorMixResult {
+    pub(crate) fn heal(&mut self) -> ColorMixResult {
         if self.hp < Self::STARTING_HP {
             self.hp += 1;
             Ok(())
@@ -58,10 +74,6 @@ impl Player {
             ))
             .into())
         }
-    }
-
-    pub fn is_dead(&self) -> bool {
-        self.hp == 0
     }
 }
 
