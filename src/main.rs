@@ -26,7 +26,7 @@ use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
 use pool::PoolPlugin;
 
-use crate::{color_mix_resource::ColorMixPlugin, debug::DebugPlugins, ui_components::UIPlugins};
+use crate::{color_mix_resource::ColorMixPlugin, debug::DebugPlugins};
 
 fn main() {
     println!("Git Test");
