@@ -7,13 +7,19 @@ use crate::{
 
 pub struct Bank {
     colors: PrimaryColorSet,
+    capacity_per_color: u32,
 }
 
 impl Bank {
     pub fn new(initial_count: u32) -> Self {
         Self {
             colors: PrimaryColorSet::with_initial_count(initial_count),
+            capacity_per_color: initial_count,
         }
+    }
+
+    pub fn capacity_per_color(&self) -> u32 {
+        self.capacity_per_color
     }
 
     pub fn remaining(&self, color: PrimaryColor) -> u32 {

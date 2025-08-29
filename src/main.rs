@@ -29,7 +29,6 @@ use pool::PoolPlugin;
 use crate::{color_mix_resource::ColorMixPlugin, debug::DebugPlugins};
 
 fn main() {
-    println!("Git Test");
     App::new()
         .add_plugins(DefaultPlugins.set(AssetPlugin {
             mode: AssetMode::Unprocessed,
