@@ -4,6 +4,7 @@ mod circle;
 mod color_mix_resource;
 mod debug;
 mod framerate_counter;
+mod hp;
 mod inertia;
 mod mouse_drag;
 mod palette;
@@ -22,6 +23,7 @@ use bevy::{
 use bevy_world_space::{WorldSpacePlugins, world_init::WorldInitPlugin};
 use circle::CirclePlugin;
 use framerate_counter::FrameratePlugin;
+use hp::HpPlugin;
 use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
 use pool::PoolPlugin;
@@ -48,5 +50,6 @@ fn main() {
         .add_plugins(PoolPlugin)
         .add_plugins(BankPlugin)
         .add_plugins(DebugPlugins)
+        .add_plugins(HpPlugin)
         .run();
 }
