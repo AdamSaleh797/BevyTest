@@ -3,11 +3,9 @@ use bevy::{
     asset::AssetServer,
     ecs::{
         component::Component,
-        query::With,
         schedule::IntoSystemConfigs,
         system::{Commands, Query, Res},
     },
-    reflect::impl_reflect,
     text::{JustifyText, Text2d, TextFont, TextLayout},
     utils::default,
 };
@@ -17,10 +15,7 @@ use bevy_world_space::{
     world_unit::{WorldUnit, WorldVec2},
 };
 
-use crate::{
-    color_mix_resource::{self, ColorMixRes},
-    hp,
-};
+use crate::color_mix_resource::{self, ColorMixRes};
 
 enum Player {
     P1,
