@@ -19,6 +19,10 @@ impl Pot {
         }
     }
 
+    pub fn colors(&self) -> &[PrimaryColor; Self::POT_SIZE] {
+        &self.colors
+    }
+
     pub fn rotate_color(&mut self, color: PrimaryColor) {
         self.colors = [color, self.colors[0]]
     }
