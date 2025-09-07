@@ -8,6 +8,7 @@ mod hp;
 mod inertia;
 mod mouse_drag;
 mod palette;
+mod playmat;
 mod pool;
 mod shapes;
 mod ui_components;
@@ -26,6 +27,7 @@ use framerate_counter::FrameratePlugin;
 use hp::HpPlugin;
 use inertia::InertiaPlugin;
 use mouse_drag::MouseDragPlugin;
+use playmat::PlaymatPlugin;
 use pool::PoolPlugin;
 
 use crate::{color_mix_resource::ColorMixPlugin, debug::DebugPlugins};
@@ -50,5 +52,6 @@ fn main() {
         .add_plugins(BankPlugin)
         .add_plugins(DebugPlugins)
         .add_plugins(HpPlugin)
+        .add_plugins(PlaymatPlugin)
         .run();
 }
