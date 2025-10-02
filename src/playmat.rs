@@ -51,8 +51,8 @@ fn setup(
     //position of playmat 1
     let position1 = Position::new(
         WorldVec2::new(
-            WorldUnit::left(win_info.aspect_ratio()) + WorldUnit::new(8.) + WorldUnit::new(1.),
-            WorldUnit::bottom(win_info.aspect_ratio()) + WorldUnit::new(4.) + WorldUnit::new(1.),
+            WorldUnit::left(win_info.aspect_ratio()) + WorldUnit::new(8.),
+            WorldUnit::bottom(win_info.aspect_ratio()) + WorldUnit::new(4.),
         ),
         WorldUnit::new(16.),
         16,
@@ -73,8 +73,8 @@ fn setup(
     //position of playmat 2
     let position2 = Position::new(
         WorldVec2::new(
-            WorldUnit::right(win_info.aspect_ratio()) - WorldUnit::new(8.) - WorldUnit::new(1.),
-            WorldUnit::bottom(win_info.aspect_ratio()) + WorldUnit::new(4.) + WorldUnit::new(1.),
+            WorldUnit::right(win_info.aspect_ratio()) - WorldUnit::new(8.),
+            WorldUnit::bottom(win_info.aspect_ratio()) + WorldUnit::new(4.),
         ),
         WorldUnit::new(16.),
         16,
